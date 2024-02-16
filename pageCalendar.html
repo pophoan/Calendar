@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>自製日期選擇器</title>
+    <style>
+      body {
+        padding: 0;
+        margin: 0;
+        min-height: 100svh;
+        background-image: url(https://lh3.googleusercontent.com/proxy/NVaghmHwdFrISNLDTXpGvFMucne2DF3kTAMzqxcrJ-cY5hnEpEcjI32ZX7E7k0AUaWTsXQcVCmfCYCvQoR3urp875G7uGjiawCy03x8v2XHBHX2UHsry-Wa17VZQPX9Q8EdFTIBJkTw);
+        background-size: cover;
+        background-position: center;
+      }
+      * {
+        box-sizing: border-box;
+        font-family: sans-serif;
+      }
+      :root {
+        --nav-height: 60px;
+        --week-height: 30px;
+        --date-height: 100px;
+      }
+      .datepicker {
+        position: relative;
+        width: 200px;
+        height: 24px;
+        & input {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+        }
+        .icon {
+          position: absolute;
+          right: 4px;
+          top: 4px;
+        }
+      }
+      .calendarContainer {
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        display: flex;
+        justify-content: center;
+        display: none;
+        .calendar {
+          background-color: rgba(0, 0, 0, 0.5);
+          width: calc(100% - 20px);
+          height: fit-content;
+          border-radius: 0 0 10px 10px;
+          backdrop-filter: blur(1px);
+
+          .nav {
+            height: var(--nav-height);
+            display: flex;
+            justify-content: space-between;
+          }
+          .week {
+            height: var(--week-height);
+            font-weight: bold;
+            color: #f3f3f3;
+            border-bottom: 1px dashed #f3f3f3;
+          }
+          .weekday {
+            user-select: none;
+          }
+          .month {
+            color: #f3f3f3;
+            font-weight: 500;
+          }
+          .dates {
+            .date {
+              display: grid;
+              place-items: center;
+              user-select: none;
+              cursor: pointer;
+              height: var(--date-height);
+              &:hover {
+                background-color: crimson;
+              }
+            }
+            .disabled {
+              color: #5c5858;
+              background-color: #909090;
+              cursor: not-allowed;
+              &:hover {
+                color: #f3f3f3;
+                background-color: #909090;
+              }
+            }
+            .currentDate {
+              color: #f3f3f3;
+              background-color: crimson;
+            }
+          }
+          .unit1 {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+          }
+        }
+      }
+      .calendarContainer.active {
+        display: flex;
+      }
+
+      .none-decoration {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        transition: all 0.5s;
+        &:hover {
+          color: crimson;
+        }
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <div class="datepicker">
+      <input type="text" />
+      <i class="fa-solid fa-calendar icon"></i>
+    </div>
+
+    <div class="calendarContainer">
+      <div class="calendar">
+        <div class="nav">
+          <button class="leftBtn none-decoration">
+            <i class="fa-solid fa-caret-left"></i>
+          </button>
+          <span class="month">2024-02</span>
+          <button class="rightBtn none-decoration">
+            <i class="fa-solid fa-caret-right"></i>
+          </button>
+        </div>
+        <div class="week unit1">
+          <div class="weekday">S</div>
+          <div class="weekday">M</div>
+          <div class="weekday">T</div>
+          <div class="weekday">W</div>
+          <div class="weekday">T</div>
+          <div class="weekday">F</div>
+          <div class="weekday">S</div>
+        </div>
+        <div class="dates unit1"></div>
+      </div>
+    </div>
+
+    <script>
+      const divMonth = document.querySelector(".month");
+      const divCalendarContainer = document.querySelector(".calendarContainer");
+      const btnLeft = document.querySelector(".leftBtn");
+      const btnRight = document.querySelector(".rightBtn");
+      const divDates = document.querySelector(".dates");
+      const divDatepicker = document.querySelector(".datepicker");
+      const inputDate = document.querySelector(".datepicker input");
+      const wHeight = window.innerHeight;
+      console.log(wHeight);
+
+      let currentDate = new Date();
+
+      const disabledDateAry = ["2024-02-20", "2024-02-29"];
+
+      divDatepicker.addEventListener("click", (e) => {
+        divCalendarContainer.classList.add("active");
+      });
+
+      divCalendarContainer.addEventListener("click", (e) => {
+        if (e.target.classList.contains("disabled")) {
+          return false;
+        }
+        if (e.target.classList.contains("date")) {
+          let yy = e.target.getAttribute("y");
+          let mm = e.target.getAttribute("m");
+          let dd = e.target.getAttribute("d");
+          console.log(`${yy}-${mm}-${dd}`);
+          inputDate.value = `${yy}-${mm}-${dd}`;
+          divCalendarContainer.classList.remove("active");
+        } else if (e.target.classList.contains("leftBtn")) {
+        } else if (e.target.classList.contains("fa-caret-left")) {
+        } else if (e.target.classList.contains("rightBtn")) {
+        } else if (e.target.classList.contains("fa-caret-right")) {
+        } else {
+          divCalendarContainer.classList.remove("active");
+        }
+      });
+
+      btnLeft.addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar();
+      });
+      btnRight.addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar();
+      });
+
+      renderCalendar();
+
+      function renderCalendar() {
+        // 切換月份的初始值（避免divDates的node累加）
+        divDates.innerHTML = "";
+
+        //計算當月多少週
+        let totalWeeks = weeksInMonth(
+          currentDate.getFullYear(),
+          currentDate.getMonth()
+        );
+        let dateHeight = Math.floor((wHeight - 60 - 30) / totalWeeks);
+        console.log(dateHeight);
+
+        document.documentElement.style.setProperty(
+          "--date-height",
+          dateHeight + "px"
+        );
+
+        let cY = currentDate.getFullYear();
+        let cM = currentDate.toLocaleString("zh-TW", { month: "long" });
+        divMonth.innerHTML = `${cY}年${cM}`;
+
+        /* 打印上個月的當週日子空值 */
+        // 先取得當月的第一天日子與星期
+        let firstDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          1
+        );
+        let firstDay = firstDate.getDay();
+        for (let i = 0; i < firstDay; i++) {
+          const node = document.createElement("div");
+          divDates.append(node);
+        }
+
+        /* 打印這個月的所有日子 */
+        // 先取得這個月的最後一天 (相當於下個月的第0天)
+        let totalDays = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() + 1,
+          0
+        ).getDate();
+        // console.log(totalDays);
+
+        for (let i = 1; i <= totalDays; i++) {
+          const node = document.createElement("div");
+
+          //   日子與月份不足2位數則補0
+          const dd = i.toString().padStart(2, "0");
+          const mm = (currentDate.getMonth() + 1).toString().padStart(2, "0");
+          const yy = currentDate.getFullYear();
+
+          // 將dd, mm, yy的屬性值加入到HTML標籤
+          node.innerHTML = `<div class="date" y="${yy}" m="${mm}" d="${dd}">${i}</div>`;
+
+          //   加判定,如果是當天日子,就加上currentDate樣式
+          if (
+            i === new Date().getDate() &&
+            currentDate.getMonth() === new Date().getMonth() &&
+            currentDate.getFullYear() === new Date().getFullYear()
+          ) {
+            node.children[0].classList.add("currentDate");
+          }
+          //   加判定 禁用日子,就加上disabled樣式
+          disabledDateAry.map((dd) => {
+            // console.log(new Date(dd).toLocaleString());
+            let date1 = new Date(dd);
+            let date2 = new Date(
+              currentDate.getFullYear(),
+              currentDate.getMonth(),
+              i
+            );
+            if (
+              date1.getDate() === date2.getDate() &&
+              date1.getMonth() === date2.getMonth() &&
+              date1.getFullYear() === date2.getFullYear()
+            ) {
+              node.children[0].classList.add("disabled");
+            }
+          });
+
+          divDates.append(node.children[0]);
+        }
+      }
+      //   計算當月多少週
+      function weeksInMonth(year, month) {
+        const firstDateOfMonth = new Date(year, month);
+        const lastDateOfMonth = new Date(year, month + 1, 0);
+        const firstDayofMonth = firstDateOfMonth.getDay();
+        const totalDays = lastDateOfMonth.getDate();
+        const daysInFirstWeek = firstDayofMonth === 0 ? 0 : 7 - firstDayofMonth;
+        const otherDays = totalDays - daysInFirstWeek;
+        const weeks = Math.ceil(otherDays / 7);
+        const totalWeeks = weeks + (daysInFirstWeek > 0 ? 1 : 0);
+        // console.log(totalWeeks);
+        return totalWeeks;
+      }
+    </script>
+  </body>
+</html>
